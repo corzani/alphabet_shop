@@ -53,6 +53,40 @@ class CheckoutTest {
     }
 
     @Test
+    fun `Aggregate offers should filter products on the basket before normal offers are applied`() {
+
+        val testQuantities = mapOf(
+            "D" to 1,
+            "E" to 3
+        )
+
+        Checkout(
+            quantities = testQuantities,
+            prices = mapOf(
+                "D" to 1.50,
+                "E" to 2.00
+            ),
+            aggregateOffers = listOf(
+                mealDeal(3.0, "D", "E")
+            )
+        ).run {
+            assertEquals(testQuantities, quantities)
+            computeAggregateOffers { (checkout, aggregateTotalPrice) ->
+                // Quantities are filtered only inside computeAggregateOffers
+                // They are filtered before applying non-aggregate offers
+                assertEquals(
+                    mapOf(
+                        "D" to 0,
+                        "E" to 2
+                    ), checkout.quantities, "Filtered checkout should not contain the aggregate offer because it was already computed"
+                )
+                assertEquals(3.0, aggregateTotalPrice)
+            }
+            assertEquals(testQuantities, quantities)
+        }
+    }
+
+    @Test
     fun `A basket should contain items given in multiple times`() {
         val testBasket = Checkout()
             .add("A", "A", "B")
@@ -69,7 +103,7 @@ class CheckoutTest {
     }
 
     @Test
-    fun `search for possible offers and compute the total price`() {
+    fun `search for possible offers and compute the total price (without aggregate offers)`() {
         /*
         * This test should use mocks and only check if the offers functions are called with the right parameters
         * The offers functions should have been tested somewhere else

@@ -21,7 +21,7 @@ data class Checkout(
 /*
 
  */
-fun Checkout.computeAggregateOffers(postAggregateFn: (AggregateOfferResult) -> Price): Price =
+fun<T> Checkout.computeAggregateOffers(postAggregateFn: (AggregateOfferResult) -> T): T =
     aggregateOffers.fold(AggregateOfferResult(this, 0.0)) { acc: AggregateOfferResult, aggregateOffer: AggregateOffer ->
         aggregateOffer(acc.checkout)
             .let { AggregateOfferResult(it.checkout, it.price + acc.price) }
