@@ -85,7 +85,7 @@ class CheckoutTest {
             ),
             prices = mapOf("A" to aPrice, "B" to bPrice),
             offers = mapOf(
-                "A" to groupDiscountOffer(35, 6), // Only for this test..., you take 35 oranges and pay 6
+                "A" to groupDiscountOffer(35, 6), // Only for this test..., you take 35 "A" and pay 6
                 "B" to ::buyOneGetOneFree
             )
         ).run {
